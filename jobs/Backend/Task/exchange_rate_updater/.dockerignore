@@ -1,0 +1,33 @@
+# Git
+.git
+.gitignore
+
+# Bundler
+.bundle
+vendor/bundle
+
+# Rails
+log/*
+tmp/*
+storage/*
+
+# Testing
+coverage/
+spec/
+test/
+
+# Development
+.env*
+
+# Docker
+docker-compose.yml
+Dockerfile
+.dockerignore
+
+# Documentation
+README.md
+*.md
+
+# CI/CD
+.github
+.gitlab-ci.yml
