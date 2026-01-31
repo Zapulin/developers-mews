@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CNB Exchange Rates</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .header {
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+    
+    h1 {
+      color: #333;
+      margin-bottom: 0.5rem;
+      font-size: 2.5rem;
+    }
+    
+    .subtitle {
+      color: #666;
+      font-size: 1.1rem;
+    }
+
+    .api-links {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid #e9ecef;
+    }
+
+    .api-links a {
+      display: inline-block;
+      margin-right: 1rem;
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .api-links a:hover {
+      text-decoration: underline;
+    }
+    
+    .filter-section {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+    
+    .filter-section h2 {
+      color: #333;
+      margin-bottom: 1rem;
+      font-size: 1.3rem;
+    }
+    
+    .currency-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    
+    .currency-checkbox {
+      display: flex;
+      align-items: center;
+      padding: 0.5rem;
+      background: #f8f9fa;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .currency-checkbox:hover {
+      background: #e9ecef;
+      transform: translateY(-2px);
+    }
+    
+    .currency-checkbox input {
+      margin-right: 0.5rem;
+      cursor: pointer;
+    }
+    
+    .currency-checkbox label {
+      cursor: pointer;
+      font-weight: 500;
+      color: #495057;
+    }
+    
+    .filter-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+    }
+    
+    .btn-secondary:hover {
+      background: #5a6268;
+      transform: translateY(-2px);
+    }
+    
+    .rates-table-container {
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      overflow-x: auto;
+    }
+    
+    .rates-count {
+      color: #666;
+      margin-bottom: 1rem;
+      font-size: 0.95rem;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    thead {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    
+    th {
+      padding: 1rem;
+      text-align: left;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 0.5px;
+    }
+    
+    td {
+      padding: 1rem;
+      border-bottom: 1px solid #e9ecef;
+    }
+    
+    tbody tr {
+      transition: background 0.2s;
+    }
+    
+    tbody tr:hover {
+      background: #f8f9fa;
+    }
+    
+    .currency-code {
+      font-weight: 600;
+      color: #667eea;
+      font-size: 1.1rem;
+    }
+    
+    .rate-value {
+      font-weight: 600;
+      color: #28a745;
+      font-size: 1.05rem;
+    }
+    
+    .error {
+      background: #f8d7da;
+      color: #721c24;
+      padding: 1rem;
+      border-radius: 6px;
+      border-left: 4px solid #f5c6cb;
+      margin-bottom: 1rem;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: #666;
+    }
+
+    .empty-state-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+    
+    @media (max-width: 768px) {
+      body {
+        padding: 1rem;
+      }
+      
+      h1 {
+        font-size: 1.8rem;
+      }
+      
+      .currency-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      }
+      
+      table {
+        font-size: 0.9rem;
+      }
+      
+      th, td {
+        padding: 0.75rem 0.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🏦 Czech National Bank Exchange Rates</h1>
+      <p class="subtitle">Real-time currency exchange rates from CNB</p>
+      <div class="api-links">
+        <strong>API Endpoints:</strong>
+        <%= link_to 'JSON API Documentation', '#', onclick: 'showApiDocs(); return false;' %>
+      </div>
+    </div>
+
+    <% if @error %>
+      <div class="error">
+        <strong>Error:</strong> <%= @error %>
+      </div>
+    <% end %>
+
+    <div class="filter-section">
+      <h2>Filter Currencies</h2>
+      <%= form_with url: exchange_rates_path, method: :get, local: true do |f| %>
+        <% if @all_currencies.any? %>
+          <div class="currency-grid">
+            <% @all_currencies.each do |currency_code| %>
+              <div class="currency-checkbox">
+                <%= check_box_tag 'currencies[]', currency_code, 
+                    params[:currencies]&.include?(currency_code),
+                    id: "currency_#{currency_code}" %>
+                <%= label_tag "currency_#{currency_code}", currency_code %>
+              </div>
+            <% end %>
+          </div>
+          
+          <div class="filter-buttons">
+            <%= f.submit 'Filter Rates', class: 'btn btn-primary' %>
+            <%= link_to 'Show All', exchange_rates_path, class: 'btn btn-secondary' %>
+          </div>
+        <% else %>
+          <p>Loading available currencies...</p>
+        <% end %>
+      <% end %>
+    </div>
+
+    <div class="rates-table-container">
+      <% if @rates.any? %>
+        <p class="rates-count">
+          Showing <strong><%= @rates.size %></strong> exchange rates
+          (as of <%= @rates.first.date.strftime('%B %d, %Y') %>)
+        </p>
+        
+        <table>
+          <thead>
+            <tr>
+              <th>Currency</th>
+              <th>Amount</th>
+              <th>Rate (CZK)</th>
+              <th>Normalized Rate</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @rates.each do |rate| %>
+              <tr>
+                <td><span class="currency-code"><%= rate.source_currency %></span></td>
+                <td><%= rate.amount %></td>
+                <td><span class="rate-value"><%= number_with_precision(rate.rate, precision: 3) %></span></td>
+                <td><%= number_with_precision(rate.normalized_rate, precision: 5) %></td>
+                <td><%= rate.date.strftime('%Y-%m-%d') %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% else %>
+        <div class="empty-state">
+          <div class="empty-state-icon">📊</div>
+          <p><strong>No exchange rates available</strong></p>
+          <p>Select currencies from the filter above to view rates</p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <script>
+    function showApiDocs() {
+      const baseUrl = window.location.origin;
+      const docs = `
+API Endpoints Available:
+
+1. Get All Rates:
+   GET ${baseUrl}/api/v1/exchange_rates?currencies=USD,EUR,GBP
+
+2. Example Response:
+   {
+     "data": [
+       {
+         "source_currency": "USD",
+         "target_currency": "CZK",
+         "rate": 23.456,
+         "amount": 1,
+         "normalized_rate": 23.456,
+         "date": "2026-01-31"
+       }
+     ],
+     "meta": {
+       "count": 1,
+       "base_currency": "CZK",
+       "requested_currencies": ["USD"],
+       "timestamp": "2026-01-31T10:30:00Z"
+     }
+   }
+
+Try it in your browser:
+${baseUrl}/api/v1/exchange_rates?currencies=USD,EUR,GBP
+      `;
+      alert(docs);
+    }
+  </script>
+</body>
+</html>
