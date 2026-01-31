@@ -1,0 +1,85 @@
+---
+openapi: 3.0.1
+info:
+  title: API V1
+  version: v1
+paths:
+  "/api/v1/exchange_rates":
+    get:
+      summary: Retrieves exchange rates from Czech National Bank
+      tags:
+      - Exchange Rates
+      parameters:
+      - name: currencies
+        in: query
+        required: false
+        description: Comma-separated currency codes (e.g., USD,EUR,GBP). Returns all
+          rates if omitted.
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Filter by specific currencies
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    source_currency:
+                      type: string
+                      example: USD
+                    target_currency:
+                      type: string
+                      example: CZK
+                    rate:
+                      type: number
+                      format: float
+                      example: 23.456
+                    amount:
+                      type: integer
+                      example: 1
+                    normalized_rate:
+                      type: number
+                      format: float
+                      example: 23.456
+                    date:
+                      type: string
+                      format: date
+                      example: '2026-01-31'
+                  required:
+                  - source_currency
+                  - target_currency
+                  - rate
+                  - amount
+                  - normalized_rate
+                  - date
+        '422':
+          description: Service error (e.g., CNB API unavailable)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example:
+                    - 'Failed to fetch exchange rates: Connection failed'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Internal server error
+servers:
+- url: https://{defaultHost}
+  variables:
+    defaultHost:
+      default: www.example.com

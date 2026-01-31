@@ -253,7 +253,7 @@
       <p class="subtitle">Real-time currency exchange rates from CNB</p>
       <div class="api-links">
         <strong>API Endpoints:</strong>
-        <%= link_to 'JSON API Documentation', '#', onclick: 'showApiDocs(); return false;' %>
+        <%= link_to 'API Documentation', '/api-docs', target: '_blank' %>
       </div>
     </div>
 
@@ -326,41 +326,5 @@
       <% end %>
     </div>
   </div>
-
-  <script>
-    function showApiDocs() {
-      const baseUrl = window.location.origin;
-      const docs = `
-API Endpoints Available:
-
-1. Get All Rates:
-   GET ${baseUrl}/api/v1/exchange_rates?currencies=USD,EUR,GBP
-
-2. Example Response:
-   {
-     "data": [
-       {
-         "source_currency": "USD",
-         "target_currency": "CZK",
-         "rate": 23.456,
-         "amount": 1,
-         "normalized_rate": 23.456,
-         "date": "2026-01-31"
-       }
-     ],
-     "meta": {
-       "count": 1,
-       "base_currency": "CZK",
-       "requested_currencies": ["USD"],
-       "timestamp": "2026-01-31T10:30:00Z"
-     }
-   }
-
-Try it in your browser:
-${baseUrl}/api/v1/exchange_rates?currencies=USD,EUR,GBP
-      `;
-      alert(docs);
-    }
-  </script>
 </body>
 </html>

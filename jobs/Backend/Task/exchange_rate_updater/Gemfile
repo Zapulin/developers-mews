@@ -5,6 +5,8 @@ gem 'faraday-retry', '~> 2.4'
 gem 'propshaft'
 gem 'puma', '>= 5.0'
 gem 'rails', '~> 8.1.2'
+gem 'rswag-api', '~> 2.17'
+gem 'rswag-ui', '~> 2.17'
 gem 'tzinfo-data', platforms: %i[windows jruby]
 
 group :development do
@@ -22,4 +24,6 @@ group :development, :test do
   gem 'pry', '~> 0.16.0'
   gem 'pry-byebug', '~> 3.12'
   gem 'rspec-rails', '~> 8.0'
+  gem 'rswag-specs', '~> 2.17'
 end
+
